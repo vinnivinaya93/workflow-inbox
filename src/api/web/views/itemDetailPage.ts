@@ -20,7 +20,7 @@ export function itemDetailPage(opts: {
   const outcomes = item.allowedOutcomes
     .map(
       (o, index) => `
-      <label>
+      <label class="radio-option">
         <input type="radio" name="outcome" value="${attr(o)}" ${index === 0 ? 'required' : ''}>
         ${esc(OUTCOME_LABEL[o] ?? o)}
       </label>`,
@@ -39,7 +39,7 @@ export function itemDetailPage(opts: {
                     aria-describedby="note-hint"></textarea>
           <span id="note-hint" class="hint">Recorded in the audit trail and visible to the requester.</span>
         </p>
-        <button type="submit">Submit decision</button>
+        <button type="submit" class="btn-primary">Submit decision</button>
       </fieldset>
     </form>
 
@@ -54,29 +54,34 @@ export function itemDetailPage(opts: {
              <input type="text" id="cancel-reason" name="reason" maxlength="500" required
                     aria-describedby="cancel-hint">
              <span id="cancel-hint" class="hint">The requester will see this reason.</span>
-             <button type="submit">Cancel item</button>
+             <button type="submit" class="btn-danger">Cancel item</button>
            </form>`
         : ''
     }`;
 
   const record = item.completion
     ? `<h2>Recorded outcome</h2>
-       <dl>
+       <dl class="meta">
          <dt>Outcome</dt><dd>${esc(item.completion.outcome)}</dd>
          <dt>By</dt><dd>${esc(item.completion.by)}</dd>
          <dt>At</dt><dd><time datetime="${attr(item.completion.at)}">${esc(item.completion.at)}</time></dd>
          ${item.completion.note ? `<dt>Note</dt><dd>${esc(item.completion.note)}</dd>` : ''}
        </dl>`
     : item.cancellation
-      ? `<h2>Cancelled</h2><p>${esc(item.cancellation.reason)} — ${esc(item.cancellation.by)}</p>`
+      ? `<h2>Cancelled</h2>
+         <dl class="meta">
+           <dt>Reason</dt><dd>${esc(item.cancellation.reason)}</dd>
+           <dt>By</dt><dd>${esc(item.cancellation.by)}</dd>
+         </dl>`
       : '';
 
   const body = `
     <nav><a href="/">← All pending actions</a></nav>
     <h1>${esc(item.title)}</h1>
-    <dl>
+    <dl class="meta">
       <dt>Type</dt><dd>${esc(item.kindLabel)}</dd>
-      <dt>Status</dt><dd><span class="status">${esc(item.status)}</span></dd>
+      <dt>Priority</dt><dd><span class="priority" data-priority="${attr(item.priority)}">${esc(item.priority)}</span></dd>
+      <dt>Status</dt><dd><span class="status" data-status="${attr(item.status)}">${esc(item.status)}</span></dd>
       <dt>Assigned to</dt><dd>${esc(item.assignee)}</dd>
       ${item.claimedBy ? `<dt>Held by</dt><dd>${esc(item.claimedBy)}</dd>` : ''}
     </dl>

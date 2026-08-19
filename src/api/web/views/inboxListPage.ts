@@ -18,8 +18,8 @@ export function inboxListPage(opts: {
       <tr>
         <th scope="row"><a href="/items/${attr(item.id)}">${esc(item.title)}</a></th>
         <td>${esc(item.kindLabel)}</td>
-        <td>${esc(item.priority)}</td>
-        <td><span class="status">${esc(item.status)}</span></td>
+        <td><span class="priority" data-priority="${attr(item.priority)}">${esc(item.priority)}</span></td>
+        <td><span class="status" data-status="${attr(item.status)}">${esc(item.status)}</span></td>
         <td>${item.dueAt ? `<time datetime="${attr(item.dueAt)}">${esc(DUE_FORMAT.format(new Date(item.dueAt)))}</time>` : '—'}</td>
         <td>${
           item.availableActions.includes('complete')
