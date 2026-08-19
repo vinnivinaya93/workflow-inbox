@@ -8,6 +8,8 @@ Built for a technical-discussion take-home (Option 5, "Workflow Inbox"). **TypeS
 full design rationale — written stage by stage before any code — lives in
 [`docs/design/`](docs/design/00-design-index.md); this file is the operational README the
 take-home doc asks for: how to run it, assumptions, tradeoffs, and what another day would buy.
+The optional walkthrough is [`docs/demo-script.md`](docs/demo-script.md) — a full narration
+script timed to a 9-minute recording.
 
 ## Run it
 
