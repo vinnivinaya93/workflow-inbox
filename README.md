@@ -159,8 +159,11 @@ Named rather than hidden, because I would rather be asked about a gap I flagged:
 - **`ConcurrencyConflict` conflates "gone" and "someone wrote first."** Both mean "re-read", so I
   did not spend a second query distinguishing them.
 - **Rate limiting, pagination on the UI's filter combinations, and bulk actions** are absent.
-- **No automated accessibility audit.** The checklist below is a plan, not evidence — a real pass
-  would run `axe-core` in CI and one NVDA/VoiceOver session.
+- **Accessibility is tested, but not exhaustively.** `test/unit/web/accessibility.spec.ts` renders
+  both pages through jsdom and asserts zero `axe-core` violations (it already caught and fixed a
+  real empty-table-header on the list view). What automation still can't cover: `color-contrast`
+  (jsdom does no layout, so that rule is disabled in the test) and a real screen-reader pass
+  (NVDA/VoiceOver). Those remain manual.
 
 ## Accessibility checklist
 

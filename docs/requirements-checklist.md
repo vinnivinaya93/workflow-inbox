@@ -32,7 +32,7 @@ the things the doc says **not** to build (deliberately absent) and the **optiona
 | --- | --- | --- |
 | Thoughtful user experience | ✅ | Server-rendered, works with JS off; post/redirect/get so refresh never re-submits; flash messages; `cache-control: no-store`; the decision form offers only the outcomes the domain allows |
 | Clear API design | ✅ | Transitions as sub-resources (`/claim`, `/release`, `/completion`, `/cancellation`); `Idempotency-Key` required on completion; keyset pagination; `Location` on create; contract-first OpenAPI ([`contracts/openapi.yaml`](../contracts/openapi.yaml)) generated from the zod schemas |
-| Accessibility | ✅ | Skip link, `role=status`/`aria-live` flash, `<main tabindex=-1>` focus target, semantic table (`<caption>`, `<th scope>`), labelled inputs, visible focus, not colour-alone, `<time datetime>`, `.visually-hidden` link text. Full table in README → "Accessibility checklist" |
+| Accessibility | ✅ | Skip link, `role=status`/`aria-live` flash, `<main tabindex=-1>` focus target, semantic table (`<caption>`, `<th scope>`), labelled inputs, visible focus, not colour-alone, `<time datetime>`, `.visually-hidden` link text. **Automated evidence:** [`accessibility.spec.ts`](../test/unit/web/accessibility.spec.ts) runs `axe-core` over both pages (it caught + fixed a real empty-header). Full table in README → "Accessibility checklist" |
 | Maintainable code | ✅ | Hexagonal + DDD; `src/domain/**` has zero framework imports; one method (`InboxItem.complete`) holds the whole completion rule |
 | Project organization | ✅ | One dependency rule (`domain ← application ← {api, infrastructure}`) **enforced** by `import/no-restricted-paths` in [`.eslintrc.cjs`](../.eslintrc.cjs) — verified by deliberately injecting a forbidden import and watching `npm run lint` fail (git history) |
 | Error handling | ✅ | Typed domain errors ([`errors.ts`](../src/domain/inbox/errors.ts)) mapped once to RFC 9457 `application/problem+json` ([`problemDetails.ts`](../src/api/http/problemDetails.ts)); 500s leak nothing, correlated by `requestId` |
@@ -64,7 +64,7 @@ the things the doc says **not** to build (deliberately absent) and the **optiona
 npm install
 npm run typecheck     # strict TS, clean
 npm run lint          # clean; also proves the architecture boundary is enforced
-npm test              # 21 domain + use-case unit tests, no I/O
+npm test              # 25 unit tests: domain, use-case, and axe-core accessibility, no I/O
 npm run openapi:check # the committed OpenAPI matches the zod schemas
 npm run dev           # then click the UI, or curl the API (see README → 30-second demo)
 npm run test:all      # + HTTP integration and PostgreSQL Testcontainers suites (needs Docker)

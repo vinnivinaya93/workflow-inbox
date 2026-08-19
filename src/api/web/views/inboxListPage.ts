@@ -55,7 +55,8 @@ export function inboxListPage(opts: {
              <thead>
                <tr>
                  <th scope="col">Action</th><th scope="col">Type</th><th scope="col">Priority</th>
-                 <th scope="col">Status</th><th scope="col">Due</th><th scope="col"></th>
+                 <th scope="col">Status</th><th scope="col">Due</th>
+                 <th scope="col"><span class="visually-hidden">Open</span></th>
                </tr>
              </thead>
              <tbody>${rows}</tbody>
