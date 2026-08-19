@@ -73,7 +73,6 @@ export function layout(opts: { title: string; flashCode?: string | undefined; bo
 
     header.top { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem var(--gap); }
     header.top .brand { max-width: 60rem; margin: 0 auto; font-weight: 700; font-size: 1.15rem; letter-spacing: -0.01em; }
-    header.top .brand::before { content: "\\1F4E5"; margin-right: 0.4rem; }
 
     /* Never remove the focus ring; make it unmissable instead. */
     :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
