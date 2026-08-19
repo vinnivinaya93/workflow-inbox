@@ -30,6 +30,27 @@ and it exists *only* to run the optional PostgreSQL mode and its integration tes
 default path touches it, and it is not there to impress — it is the standard way to stand up the
 one dependency the optional mode needs.
 
+## What it looks like
+
+The inbox — colour-coded priority and status, works with JavaScript off:
+
+![The inbox list of pending actions](docs/screenshots/1-list.png)
+
+An item's detail page — the decision form offers only the outcomes the domain allows for that kind
+of work, plus claim and cancel:
+
+![An item detail page with the decision form](docs/screenshots/2-detail.png)
+
+Completing an item redirects back to the list with a confirmation (post/redirect/get, so a refresh
+never re-submits):
+
+![The list after completing an item, showing a success message](docs/screenshots/3-success.png)
+
+Rejecting an expense without a note is refused **by the domain**, not just the browser — the same
+rule protects the JSON API:
+
+![The detail page showing a validation error asking for a note](docs/screenshots/4-error.png)
+
 ## Run it
 
 Needs Node 20+. No database, no Docker, nothing else required for the default path.
