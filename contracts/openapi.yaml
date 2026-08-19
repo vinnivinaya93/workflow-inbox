@@ -1,0 +1,242 @@
+openapi: 3.1.0
+info:
+  title: Workflow Inbox API
+  version: 1.0.0
+components:
+  schemas: {}
+  parameters: {}
+paths:
+  /api/inbox-items:
+    post:
+      summary: Create an inbox item
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                kind:
+                  type: string
+                  enum:
+                    - approve_expense
+                    - review_deployment
+                    - upload_documentation
+                    - complete_onboarding
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 140
+                assignee:
+                  type: string
+                  minLength: 2
+                  maxLength: 64
+                priority:
+                  type: string
+                  enum:
+                    - low
+                    - normal
+                    - high
+                    - urgent
+                  default: normal
+                dueAt:
+                  type:
+                    - string
+                    - 'null'
+                  format: date-time
+              required:
+                - kind
+                - title
+                - assignee
+      responses:
+        201:
+          description: The created item
+        400:
+          description: Validation error
+    get:
+      summary: 'List inbox items (keyset pagination)'
+      parameters:
+        - schema:
+            type: string
+          required: false
+          name: status
+          in: query
+        - schema:
+            type: string
+          required: false
+          name: kind
+          in: query
+        - schema:
+            type: string
+            minLength: 2
+            maxLength: 64
+          required: false
+          name: assignee
+          in: query
+        - schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+          required: false
+          name: limit
+          in: query
+        - schema:
+            type: string
+            minLength: 1
+          required: false
+          name: cursor
+          in: query
+      responses:
+        200:
+          description: A page of items
+  '/api/inbox-items/{id}':
+    get:
+      summary: Get one inbox item
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          required: true
+          name: id
+          in: path
+      responses:
+        200:
+          description: The item
+        404:
+          description: Not found
+  '/api/inbox-items/{id}/claim':
+    post:
+      summary: 'Claim an inbox item (idempotent for the same actor)'
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          required: true
+          name: id
+          in: path
+        - schema:
+            type: string
+            minLength: 2
+            maxLength: 64
+          required: true
+          name: x-actor-id
+          in: header
+      responses:
+        200:
+          description: The updated item
+        403:
+          description: Actor is not the assignee
+        409:
+          description: Terminal state
+  '/api/inbox-items/{id}/release':
+    post:
+      summary: Release a claimed inbox item back to the queue
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          required: true
+          name: id
+          in: path
+        - schema:
+            type: string
+            minLength: 2
+            maxLength: 64
+          required: true
+          name: x-actor-id
+          in: header
+      responses:
+        200:
+          description: The updated item
+        403:
+          description: Actor does not hold the item
+        409:
+          description: Terminal state
+  '/api/inbox-items/{id}/completion':
+    post:
+      summary: 'Complete an inbox item (idempotent)'
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          required: true
+          name: id
+          in: path
+        - schema:
+            type: string
+            minLength: 2
+            maxLength: 64
+          required: true
+          name: x-actor-id
+          in: header
+        - schema:
+            type: string
+            minLength: 8
+            maxLength: 128
+          required: true
+          name: idempotency-key
+          in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                outcome:
+                  type: string
+                  enum:
+                    - approved
+                    - rejected
+                    - done
+                note:
+                  type:
+                    - string
+                    - 'null'
+                  maxLength: 1000
+              required:
+                - outcome
+      responses:
+        200:
+          description: The updated item
+        403:
+          description: Actor does not hold the item
+        409:
+          description: 'Terminal state, or already completed under another key'
+        422:
+          description: Outcome not allowed for this kind
+  '/api/inbox-items/{id}/cancellation':
+    post:
+      summary: Cancel an inbox item
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          required: true
+          name: id
+          in: path
+        - schema:
+            type: string
+            minLength: 2
+            maxLength: 64
+          required: true
+          name: x-actor-id
+          in: header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 500
+              required:
+                - reason
+      responses:
+        200:
+          description: The updated item
+        403:
+          description: Actor does not hold the item
+        409:
+          description: Terminal state
+webhooks: {}
