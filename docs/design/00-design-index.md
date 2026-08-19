@@ -1,7 +1,15 @@
 # Workflow Inbox — Staged Build (TypeScript · DDD · Ports & Adapters)
 
-This folder is the design + code record for the prescreen exercise in
-`Interview Prescreen Project.doc`.
+> **Note — this folder is the *pre-implementation* design record.** It was written stage by stage
+> before the code, and the shipped code follows it closely. Where the two differ, **the code is
+> authoritative**; the notable deltas found while actually building and running it (an
+> `exactOptionalPropertyTypes` fix in `ListInboxItems`, Fastify 5's `logger` vs `loggerInstance`
+> split, the eslint import-resolver needed to make the boundary rule actually fire, a `cancel`
+> action in the web UI, `npm start`'s `dist/src/main.js` path, and business metrics wired into the
+> in-memory runtime too) are recorded in the git history and the root `README.md`. Read these docs
+> for the *reasoning*; read the code for the *current truth*.
+
+This folder is the design record for the take-home exercise (Option 5, Workflow Inbox).
 
 - **Chosen prompt:** Option 5 — *Workflow Inbox* (internal operations tool: list pending
   actions such as *approve an expense*, *review a deployment*, *upload documentation*,

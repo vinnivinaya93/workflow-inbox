@@ -9,7 +9,26 @@ full design rationale — written stage by stage before any code — lives in
 [`docs/design/`](docs/design/00-design-index.md); this file is the operational README the
 take-home doc asks for: how to run it, assumptions, tradeoffs, and what another day would buy.
 The optional walkthrough is [`docs/demo-script.md`](docs/demo-script.md) — a full narration
-script timed to a 9-minute recording.
+script timed to a 9-minute recording. A requirement-by-requirement map of the doc onto this code
+is in [`docs/requirements-checklist.md`](docs/requirements-checklist.md).
+
+### On scope and time
+
+The doc suggests **≤60 minutes** and says a small, thoughtful project beats a large one. This is
+deliberately more than a 60-minute build, and I'd rather be straight about that than pretend
+otherwise. The **core** — the domain model, the use cases, the JSON API, and the accessible UI —
+is the part I'd defend as the thoughtful hour. **PostgreSQL, the transactional outbox, metrics,
+and the Testcontainers suite are a knowingly post-hour continuation**, included because the doc
+frames this as "the starting point for our technical conversation" and explicitly invites *what
+you would have done next*. The default runtime is in-memory precisely so none of that continuation
+is on the path a reviewer has to run. Where I chose not to build something, it's called out under
+[Known gaps](#known-gaps) with the reason — which the doc also asks for.
+
+Things the doc says you **don't need to add** — authentication, CI/CD, Kubernetes, deployment
+scripts — are deliberately absent. The one nuance is Docker: there is a single `docker-compose.yml`,
+and it exists *only* to run the optional PostgreSQL mode and its integration tests. Nothing on the
+default path touches it, and it is not there to impress — it is the standard way to stand up the
+one dependency the optional mode needs.
 
 ## Run it
 
@@ -130,15 +149,15 @@ Named rather than hidden, because I would rather be asked about a gap I flagged:
 - **Templates escape by convention**, not by construction. A tagged-template literal that escapes
   by default would remove the human from the loop; the `esc()` discipline currently relies on
   review.
-- **The outbox has no drainer.** Events are written transactionally and correctly, and nothing
-  reads them yet. The design sketch (`FOR UPDATE SKIP LOCKED`) is in `docs/design/04-stage-3-infrastructure-adapters.md`.
+- **The outbox has no consumer.** Events are written transactionally and correctly, and business
+  metrics (`inbox_items_completed_total`, `outbox_events_enqueued_total`) *are* wired into both
+  runtimes — `MeteredEventPublisher` decorates the event publisher in
+  `src/composition/container.ts` for in-memory and Postgres alike, so `/metrics` populates on the
+  default `npm run dev`. But nothing downstream *reads* the outbox rows yet, so the at-least-once
+  delivery guarantee is still theoretical (drainer sketch, `FOR UPDATE SKIP LOCKED`, in
+  `docs/design/04-stage-3-infrastructure-adapters.md`).
 - **`ConcurrencyConflict` conflates "gone" and "someone wrote first."** Both mean "re-read", so I
   did not spend a second query distinguishing them.
-- **Business metrics (`inbox_items_completed_total`, `outbox_events_enqueued_total`) are only
-  wired for the PostgreSQL adapter**, via `MeteredEventPublisher` decorating the outbox publisher
-  in `src/composition/container.ts`. The in-memory adapter still serves `/metrics` (HTTP duration,
-  default Node metrics) but does not decorate its event publisher — wiring it there too is a
-  one-line change if the in-memory runtime needs business metrics as well.
 - **Rate limiting, pagination on the UI's filter combinations, and bulk actions** are absent.
 - **No automated accessibility audit.** The checklist below is a plan, not evidence — a real pass
   would run `axe-core` in CI and one NVDA/VoiceOver session.

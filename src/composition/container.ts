@@ -60,7 +60,11 @@ export function buildContainer(config: AppConfig, clock: Clock = new SystemClock
     };
   }
 
-  const uow = new InMemoryUnitOfWork(new InMemoryStore());
+  const uow = new InMemoryUnitOfWork(
+    new InMemoryStore(),
+    [],
+    (publisher) => new MeteredEventPublisher(publisher),
+  );
   return {
     useCases: buildUseCases(uow, clock),
     uow,
