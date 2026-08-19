@@ -1,3 +1,7 @@
+# OPTIONAL. The app runs with zero setup via `npm run dev` (in-memory store) and needs nothing
+# here. This file exists only to stand up a PostgreSQL database for the optional `STORE=postgres`
+# mode and the integration tests. The take-home doc says you don't need Docker — you don't, for
+# the default path. This is the one dependency the optional production-mode needs, nothing more.
 services:
   postgres:
     image: postgres:16-alpine
