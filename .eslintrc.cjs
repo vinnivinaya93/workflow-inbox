@@ -6,6 +6,12 @@ module.exports = {
   extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
   env: { node: true, es2022: true },
   ignorePatterns: ['dist', 'node_modules'],
+  settings: {
+    // Source imports use explicit .js extensions (NodeNext ESM) that point at .ts files.
+    // Without this, eslint-plugin-import can't resolve them to real paths, and
+    // no-restricted-paths silently stops enforcing the architecture boundary below.
+    'import/resolver': { typescript: { project: './tsconfig.json' } },
+  },
   rules: {
     'import/no-restricted-paths': ['error', {
       zones: [

@@ -47,9 +47,15 @@ export function toProblem(error: unknown, requestId: string, instance: string): 
   const code = codeFor(error);
 
   // A 500 means we do not understand the failure, so the client learns nothing beyond that.
-  // The real message and stack go to the log, correlated by requestId.
+  // The real message and stack go to the log, correlated by requestId. ZodError's own
+  // `.message` is a JSON dump of its issues array, which is already surfaced field-by-field
+  // in `errors` below — repeating it here would just be noise.
   const detail =
-    status === 500 ? 'An unexpected error occurred.' : ((error as Error).message ?? 'Request failed.');
+    status === 500
+      ? 'An unexpected error occurred.'
+      : error instanceof ZodError
+        ? 'The request did not match the expected shape; see errors for details.'
+        : ((error as Error).message ?? 'Request failed.');
 
   const errors =
     error instanceof ZodError

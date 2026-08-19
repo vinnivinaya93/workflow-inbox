@@ -15,6 +15,7 @@ export function itemDetailPage(opts: {
 }): string {
   const { item } = opts;
   const canComplete = item.availableActions.includes('complete');
+  const canCancel = item.availableActions.includes('cancel');
 
   const outcomes = item.allowedOutcomes
     .map(
@@ -44,7 +45,19 @@ export function itemDetailPage(opts: {
 
     <form method="post" action="/items/${attr(item.id)}/${item.status === 'claimed' ? 'release' : 'claim'}">
       <button type="submit">${item.status === 'claimed' ? 'Release to queue' : 'Claim this item'}</button>
-    </form>`;
+    </form>
+
+    ${
+      canCancel
+        ? `<form method="post" action="/items/${attr(item.id)}/cancel">
+             <label for="cancel-reason">Cancel this item <span class="hint">(reason required)</span></label><br>
+             <input type="text" id="cancel-reason" name="reason" maxlength="500" required
+                    aria-describedby="cancel-hint">
+             <span id="cancel-hint" class="hint">The requester will see this reason.</span>
+             <button type="submit">Cancel item</button>
+           </form>`
+        : ''
+    }`;
 
   const record = item.completion
     ? `<h2>Recorded outcome</h2>

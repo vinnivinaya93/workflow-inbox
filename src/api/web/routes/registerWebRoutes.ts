@@ -98,6 +98,19 @@ export async function registerWebRoutes(app: FastifyInstance, useCases: UseCases
 
   transition('claim', (id, actor) => useCases.claimInboxItem.execute({ id: inboxItemId(id), actor }), 'claimed');
   transition('release', (id, actor) => useCases.releaseInboxItem.execute({ id: inboxItemId(id), actor }), 'released');
+
+  app.post('/items/:id/cancel', async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const body = request.body as { reason?: string };
+    try {
+      await useCases.cancelInboxItem.execute({
+        id: inboxItemId(id), actor: actorOf(request), reason: body.reason ?? '',
+      });
+      return reply.redirect(`/?flash=cancelled`, 303);
+    } catch (error) {
+      return reply.redirect(`/items/${encodeURIComponent(id)}?flash=${codeOf(error)}`, 303);
+    }
+  });
 }
 
 function html(reply: FastifyReply, body: string): FastifyReply {
